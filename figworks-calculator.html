@@ -275,7 +275,7 @@
         }
         
         .person-box {
-            background: #000000;
+            background: #4b5563;
             color: white;
             padding: 28px;
             border-radius: 14px;
@@ -310,7 +310,7 @@
         }
         
         button {
-            background: #000000;
+            background: #6b7280;
             color: white;
             border: none;
             padding: 14px 24px;
@@ -324,29 +324,13 @@
         }
         
         button:hover {
-            background: #1f2937;
+            background: #4b5563;
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
         
         button:active {
             transform: translateY(0);
-        }
-        
-        button.success {
-            background: #000000;
-        }
-        
-        button.success:hover {
-            background: #1f2937;
-        }
-        
-        button.secondary {
-            background: #374151;
-        }
-        
-        button.secondary:hover {
-            background: #4b5563;
         }
         
         .button-grid {
@@ -592,7 +576,7 @@
         }
         
         .project-item-btn.load {
-            background: #000000;
+            background: #6b7280;
             color: white;
         }
         
@@ -647,7 +631,7 @@
                     <h2 style="font-size: 14px; margin-bottom: 5px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Current Project</h2>
                     <p id="currentProjectDisplay" style="font-size: 22px; margin: 0; font-weight: 700; color: #000000;">No Project Selected</p>
                 </div>
-                <button onclick="showProjectModal()" style="background: #000000; padding: 12px 20px; color: white; font-weight: 700; box-shadow: none; width: auto;">
+                <button onclick="showProjectModal()" style="padding: 12px 20px; width: auto;">
                     📁 Manage Projects
                 </button>
             </div>
@@ -673,7 +657,7 @@
                             <label>Client Name</label>
                             <input type="text" id="newClientName" placeholder="e.g., Acme Corporation">
                         </div>
-                        <button onclick="createNewProject()" class="success" style="margin-top: 10px;">✨ Create Project</button>
+                        <button onclick="createNewProject()" style="margin-top: 10px;">✨ Create Project</button>
                     </div>
                     
                     <!-- Select Existing Project -->
@@ -686,8 +670,8 @@
                     <div class="modal-section">
                         <h3 style="color: #000000; margin-bottom: 15px; font-weight: 700; font-size: 16px;">💾 Backup & Restore</h3>
                         <div class="button-grid">
-                            <button onclick="exportAllProjects()" class="secondary">📤 Export All Projects</button>
-                            <button onclick="document.getElementById('importFile').click()" class="secondary">📥 Import Projects</button>
+                            <button onclick="exportAllProjects()">📤 Export All Projects</button>
+                            <button onclick="document.getElementById('importFile').click()">📥 Import Projects</button>
                         </div>
                         <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importProjects(event)">
                     </div>
@@ -705,7 +689,7 @@
             <div class="input-grid">
                 <div class="input-group">
                     <label>Quoted Days</label>
-                    <input type="number" id="quotedDays" value="5" min="0" step="0.5">
+                    <input type="number" id="quotedDays" value="0" min="0" step="0.5">
                 </div>
                 
                 <div class="input-group">
@@ -728,27 +712,27 @@
                     <div class="input-group">
                         <label>Workshop Commission</label>
                         <div class="rate-input-wrapper">
-                            <input type="number" id="workshopRate" value="20" min="0" max="100" step="1">
+                            <input type="number" id="workshopRate" value="20" min="0" max="100" step="1" readonly style="background: #f3f4f6; cursor: not-allowed;">
                         </div>
                     </div>
                     
                     <div class="input-group">
                         <label>Acquisition Commission</label>
                         <div class="rate-input-wrapper">
-                            <input type="number" id="acquisitionRate" value="20" min="0" max="100" step="1">
+                            <input type="number" id="acquisitionRate" value="10" min="0" max="100" step="1" readonly style="background: #f3f4f6; cursor: not-allowed;">
                         </div>
                     </div>
                     
                     <div class="input-group">
                         <label>Buffer Contingency</label>
                         <div class="rate-input-wrapper">
-                            <input type="number" id="leewayRate" value="10" min="0" max="100" step="1">
+                            <input type="number" id="leewayRate" value="10" min="0" max="100" step="1" readonly style="background: #f3f4f6; cursor: not-allowed;">
                         </div>
                     </div>
                 </div>
             </div>
             
-            <button class="secondary" onclick="calculateBaseRate()">📊 Calculate Suggested Base Rate</button>
+            <button onclick="calculateBaseRate()">📊 Calculate Suggested Base Rate</button>
             
             <div id="baseRateDisplay" class="highlight-box hidden">
                 <div class="highlight-label">Suggested Base Rate</div>
@@ -796,29 +780,16 @@
                 <input type="number" id="invoiceTotal" value="0" min="0" step="100">
             </div>
             
-            <div class="input-grid">
-                <div class="input-group">
-                    <label>Acquired By</label>
-                    <select id="acquisitionBy">
-                        <option value="kelvin">Kelvin</option>
-                        <option value="janna">Janna</option>
-                        <option value="shared">Shared (Split 50/50)</option>
-                        <option value="other">Other Person</option>
-                    </select>
-                </div>
-                
-                <div class="input-group">
-                    <label>Profit Pool Goes To</label>
-                    <select id="profitPoolCreator">
-                        <option value="kelvin">Kelvin (30% to Kelvin, 70% to Janna)</option>
-                        <option value="janna">Janna (100%)</option>
-                        <option value="shared">Shared (Split 50/50)</option>
-                        <option value="other">Other Person</option>
-                    </select>
-                </div>
+            <div class="input-group">
+                <label>Acquired By <span class="label-hint">- Who brought in this project</span></label>
+                <select id="acquisitionBy">
+                    <option value="kelvin">Kelvin</option>
+                    <option value="janna">Janna</option>
+                    <option value="other">Other Person</option>
+                </select>
             </div>
             
-            <button class="success" onclick="calculateProfitPool()">💰 Calculate Profit Pool</button>
+            <button onclick="calculateProfitPool()">💰 Calculate Profit Pool</button>
             
             <div id="profitPoolDisplay" class="highlight-box success hidden">
                 <div class="highlight-label">Profit Pool</div>
@@ -868,10 +839,10 @@
                 </div>
                 
                 <div class="button-grid">
-                    <button onclick="copyInvoice()" style="background: #000000;">
+                    <button onclick="copyInvoice()">
                         📋 Copy for WhatsApp
                     </button>
-                    <button onclick="exportInvoicePDF()" style="background: #374151;">
+                    <button onclick="exportInvoicePDF()">
                         📥 Download PDF
                     </button>
                 </div>
@@ -928,7 +899,7 @@
             
             <button onclick="calculateFinalReconciliation()">🧮 Calculate Final Distribution</button>
             
-            <button id="exportPdfButton" onclick="exportReconciliationPDF()" style="display: none; background: #374151; margin-top: 10px;">📥 Export Calculations PDF</button>
+            <button id="exportPdfButton" onclick="exportReconciliationPDF()" style="display: none; margin-top: 10px;">📥 Export Calculations PDF</button>
             
             <div id="reconciliationResults" class="hidden">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; cursor: pointer; padding: 18px; background: #f9fafb; border-radius: 12px; border: 1.5px solid #e5e7eb;" onclick="toggleMoneyFlow()">
@@ -1036,7 +1007,7 @@
                         <div class="person-amount" id="kelvinTotal">KES 0</div>
                         <div style="font-size: 11px; margin-top: 10px; opacity: 0.9; line-height: 1.5;" id="kelvinBreakdown"></div>
                     </div>
-                    <div class="person-box" style="background: #374151;">
+                    <div class="person-box">
                         <div class="person-name">Janna / Workshop</div>
                         <div class="person-amount" id="jannaTotal">KES 0</div>
                         <div style="font-size: 11px; margin-top: 10px; opacity: 0.9; line-height: 1.5;" id="jannaBreakdown"></div>
@@ -1144,14 +1115,13 @@
             
             // Load project data into form
             const data = project.data;
-            document.getElementById('quotedDays').value = data.quotedDays || 5;
+            document.getElementById('quotedDays').value = data.quotedDays || 0;
             document.getElementById('dayRate').value = data.dayRate || 3000;
             document.getElementById('materials').value = data.materials || 0;
             document.getElementById('workshopRate').value = data.workshopRate || 20;
-            document.getElementById('acquisitionRate').value = data.acquisitionRate || 20;
+            document.getElementById('acquisitionRate').value = data.acquisitionRate || 10;
             document.getElementById('leewayRate').value = data.leewayRate || 10;
             document.getElementById('acquisitionBy').value = data.acquisitionBy || 'kelvin';
-            document.getElementById('profitPoolCreator').value = data.profitPoolCreator || 'kelvin';
             document.getElementById('invoiceTotal').value = data.invoiceTotal || 0;
             document.getElementById('invoiceNumber').value = data.invoiceNumber || '';
             document.getElementById('notes').value = data.notes || 'Thank you for your business!\nPayment via M-Pesa: 0705 626 136';
@@ -1223,14 +1193,13 @@
         
         function getDefaultProjectData() {
             return {
-                quotedDays: 5,
+                quotedDays: 0,
                 dayRate: 3000,
                 materials: 0,
                 workshopRate: 20,
-                acquisitionRate: 20,
+                acquisitionRate: 10,
                 leewayRate: 10,
                 acquisitionBy: 'kelvin',
-                profitPoolCreator: 'kelvin',
                 invoiceTotal: 0,
                 invoiceNumber: '',
                 notes: 'Thank you for your business!\nPayment via M-Pesa: 0705 626 136',
@@ -1334,7 +1303,6 @@
                 acquisitionRate: document.getElementById('acquisitionRate').value,
                 leewayRate: document.getElementById('leewayRate').value,
                 acquisitionBy: document.getElementById('acquisitionBy').value,
-                profitPoolCreator: document.getElementById('profitPoolCreator').value,
                 invoiceTotal: document.getElementById('invoiceTotal').value,
                 invoiceNumber: document.getElementById('invoiceNumber').value,
                 notes: document.getElementById('notes').value,
@@ -1455,7 +1423,7 @@
                 day: 'numeric' 
             });
             
-            const text = `┌────────────────────────────┐
+            const text = `┌────────────────────────────
           FIGWORKS
     Project Finance Calculator
     M-Pesa: 0705 626 136
@@ -1496,11 +1464,9 @@ Generated by FigWorks Calculator
                 const btn = event.target;
                 const originalText = btn.textContent;
                 btn.textContent = '✓ Copied!';
-                btn.style.background = '#374151';
                 
                 setTimeout(() => {
                     btn.textContent = originalText;
-                    btn.style.background = '#000000';
                 }, 2000);
             }).catch(() => {
                 alert('Please copy the text manually');
@@ -1536,7 +1502,6 @@ Generated by FigWorks Calculator
             const leewayRate = parseFloat(document.getElementById('leewayRate').value) / 100 || 0;
             
             const acquisitionBy = document.getElementById('acquisitionBy').value;
-            const profitPoolCreator = document.getElementById('profitPoolCreator').value;
             
             // Base calculations
             const quotedLabour = days * rate;
@@ -1663,33 +1628,21 @@ Generated by FigWorks Calculator
                 } else if (acquisitionBy === 'janna') {
                     jannaTotal += actualAcqComm;
                     jannaItems.push(`Acquisition: ${fmt(actualAcqComm)}`);
-                } else if (acquisitionBy === 'shared') {
-                    const acqSplit = actualAcqComm / 2;
-                    kelvinTotal += acqSplit;
-                    jannaTotal += acqSplit;
-                    kelvinItems.push(`Acq (50%): ${fmt(acqSplit)}`);
-                    jannaItems.push(`Acq (50%): ${fmt(acqSplit)}`);
                 }
             }
             
-            // Final profit distribution
+            // Final profit distribution (using same person who acquired the project)
             if (finalProfit > 0) {
-                if (profitPoolCreator === 'kelvin') {
+                if (acquisitionBy === 'kelvin') {
                     const kelvinProfit = finalProfit * 0.3;
                     const jannaProfit = finalProfit * 0.7;
                     kelvinTotal += kelvinProfit;
                     jannaTotal += jannaProfit;
                     kelvinItems.push(`Profit (30%): ${fmt(kelvinProfit)}`);
                     jannaItems.push(`Profit (70%): ${fmt(jannaProfit)}`);
-                } else if (profitPoolCreator === 'janna') {
+                } else if (acquisitionBy === 'janna') {
                     jannaTotal += finalProfit;
                     jannaItems.push(`Profit: ${fmt(finalProfit)}`);
-                } else if (profitPoolCreator === 'shared') {
-                    const profitSplit = finalProfit / 2;
-                    kelvinTotal += profitSplit;
-                    jannaTotal += profitSplit;
-                    kelvinItems.push(`Profit (50%): ${fmt(profitSplit)}`);
-                    jannaItems.push(`Profit (50%): ${fmt(profitSplit)}`);
                 }
             }
             
@@ -1772,10 +1725,10 @@ Generated by FigWorks Calculator
             const margin = 20;
             const contentWidth = pageWidth - (margin * 2);
             
-            // Modern black header
+            // Medium gray header
             const gradient = doc.GState({ fillOpacity: 0.95 });
             doc.setGState(gradient);
-            doc.setFillColor(0, 0, 0);
+            doc.setFillColor(107, 114, 128);
             doc.rect(0, 0, pageWidth, 45, 'F');
             
             doc.setTextColor(255, 255, 255);
@@ -1812,7 +1765,7 @@ Generated by FigWorks Calculator
             y += lineHeight + 5;
             
             // Separator
-            doc.setDrawColor(0, 0, 0);
+            doc.setDrawColor(107, 114, 128);
             doc.setLineWidth(0.8);
             doc.line(margin, y, pageWidth - margin, y);
             y += 10;
@@ -1843,7 +1796,7 @@ Generated by FigWorks Calculator
             
             y += 25;
             
-            // Amount section - large and prominent
+            // Amount section
             doc.setFillColor(245, 245, 245);
             doc.roundedRect(margin, y, contentWidth, 35, 3, 3, 'F');
             
@@ -1860,7 +1813,7 @@ Generated by FigWorks Calculator
             
             // Notes section
             if (notes && notes.trim()) {
-                doc.setDrawColor(0, 0, 0);
+                doc.setDrawColor(107, 114, 128);
                 doc.setLineWidth(0.8);
                 doc.line(margin, y, pageWidth - margin, y);
                 y += 10;
@@ -1922,10 +1875,10 @@ Generated by FigWorks Calculator
             const margin = 20;
             const contentWidth = pageWidth - (margin * 2);
             
-            // Modern black header
+            // Medium gray header
             const gradient = doc.GState({ fillOpacity: 0.95 });
             doc.setGState(gradient);
-            doc.setFillColor(0, 0, 0);
+            doc.setFillColor(107, 114, 128);
             doc.rect(0, 0, pageWidth, 45, 'F');
             
             doc.setTextColor(255, 255, 255);
@@ -1943,7 +1896,7 @@ Generated by FigWorks Calculator
             
             y = 55;
             
-            // Project details with modern styling
+            // Project details
             doc.setTextColor(0, 0, 0);
             doc.setFontSize(10);
             doc.setFont(undefined, 'bold');
@@ -1969,13 +1922,13 @@ Generated by FigWorks Calculator
             doc.text(currentDate, margin + 25, y);
             y += lineHeight + 8;
             
-            // Sleek separator line
-            doc.setDrawColor(0, 0, 0);
+            // Separator line
+            doc.setDrawColor(107, 114, 128);
             doc.setLineWidth(0.8);
             doc.line(margin, y, pageWidth - margin, y);
             y += 12;
             
-            // Invoice Amount with modern box
+            // Invoice Amount
             doc.setFillColor(240, 244, 255);
             doc.roundedRect(margin, y - 3, contentWidth, 10, 2, 2, 'F');
             doc.setFontSize(11);
@@ -1985,7 +1938,7 @@ Generated by FigWorks Calculator
             doc.text(document.getElementById('invoiceAmount').textContent, pageWidth - margin - 3, y + 4, { align: 'right' });
             y += 15;
             
-            // Hard Deductions section with modern header
+            // Hard Deductions section
             doc.setFillColor(249, 250, 251);
             doc.roundedRect(margin, y, contentWidth, 9, 2, 2, 'F');
             doc.setTextColor(55, 65, 81);
@@ -2150,8 +2103,8 @@ Generated by FigWorks Calculator
                 y = 20;
             }
             
-            // Modern black header for final totals
-            doc.setFillColor(0, 0, 0);
+            // Gray header for final totals
+            doc.setFillColor(107, 114, 128);
             doc.roundedRect(margin, y, contentWidth, 12, 2, 2, 'F');
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(12);
@@ -2159,8 +2112,8 @@ Generated by FigWorks Calculator
             doc.text('FINAL TOTALS', pageWidth / 2, y + 8, { align: 'center' });
             y += 18;
             
-            // Kelvin's box with black styling
-            doc.setFillColor(0, 0, 0);
+            // Kelvin's box
+            doc.setFillColor(107, 114, 128);
             doc.roundedRect(margin, y, (contentWidth / 2) - 5, 32, 3, 3, 'F');
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(10);
@@ -2181,8 +2134,8 @@ Generated by FigWorks Calculator
                 }
             });
             
-            // Janna's box with dark gray styling
-            doc.setFillColor(55, 65, 81);
+            // Janna's box
+            doc.setFillColor(107, 114, 128);
             doc.roundedRect(margin + (contentWidth / 2) + 5, y, (contentWidth / 2) - 5, 32, 3, 3, 'F');
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(10);
@@ -2205,13 +2158,13 @@ Generated by FigWorks Calculator
             
             y += 42;
             
-            // Modern footer
+            // Footer
             doc.setTextColor(156, 163, 175);
             doc.setFontSize(8);
             doc.setFont(undefined, 'normal');
             doc.text('Generated by FigWorks Calculator', pageWidth / 2, 285, { align: 'center' });
             
-            // Save with modern filename
+            // Save
             const filename = `FigWorks_Reconciliation_${projectTitle.replace(/[^a-z0-9]/gi, '_')}_${currentDate.replace(/[^a-z0-9]/gi, '_')}.pdf`;
             doc.save(filename);
         }
