@@ -1,6 +1,6 @@
-# My Web Apps
+# Mini Apps
 
-This repository hosts my personal web apps on GitHub Pages.
+This repository hosts my personal mini apps on GitHub Pages.
 
 ## 🌐 Live Site
 https://jannadeeble.github.io
@@ -12,13 +12,13 @@ This repo has automatic syncing set up. Any file you add, modify, or delete will
 ### Start Auto-Sync
 
 ```bash
-cd ~/jannadeeble.github.io
+cd ~/mini-apps
 node auto-sync.js
 ```
 
 Or run in the background:
 ```bash
-cd ~/jannadeeble.github.io
+cd ~/mini-apps
 node auto-sync.js &
 ```
 
@@ -38,7 +38,7 @@ pkill -f auto-sync.js
 ## 📁 Folder Structure
 
 ```
-jannadeeble.github.io/
+mini-apps/
 ├── index.html          # Homepage
 ├── app1.html          # Your apps
 ├── app2.html
