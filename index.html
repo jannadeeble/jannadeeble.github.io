@@ -3,40 +3,209 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini Apps</title>
+    <title>Mini Apps Dashboard</title>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 20px;
-            line-height: 1.6;
-        }
-        h1 {
-            color: #333;
-        }
-        .app-list {
-            list-style: none;
+        * {
+            margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
-        .app-list li {
-            margin: 10px 0;
-            padding: 10px;
-            background: #f5f5f5;
-            border-radius: 5px;
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
         }
-        .app-list a {
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            color: white;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .app-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px 20px;
+            text-align: center;
             text-decoration: none;
-            color: #0066cc;
+            color: #333;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .app-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+        }
+
+        .app-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .app-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .app-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .app-description {
+            font-size: 0.85rem;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+        }
+
+        .empty-state h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .user-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+            color: white;
+            font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .apps-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 15px;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Mini Apps</h1>
-    <p>Welcome! This is your personal collection of mini apps.</p>
+    <div class="user-info" id="userInfo" style="display: none;">
+        <span id="userName"></span>
+    </div>
 
-    <ul class="app-list">
-        <li>Add your apps here as you create them!</li>
-    </ul>
+    <div class="container">
+        <header>
+            <h1>🚀 Mini Apps</h1>
+            <p class="subtitle">Your personal app launcher</p>
+        </header>
+
+        <div class="apps-grid" id="appsGrid">
+            <!-- Apps will be dynamically loaded here -->
+        </div>
+
+        <div class="empty-state" id="emptyState">
+            <h2>No apps yet!</h2>
+            <p>Add HTML files to ~/mini-apps/ and they'll appear here automatically</p>
+        </div>
+    </div>
+
+    <script>
+        // This will be populated by the auto-discovery script
+        const apps = [
+            // Format: { name: "App Name", file: "app.html", description: "Description", icon: "🎯" }
+        ];
+
+        function renderApps() {
+            const grid = document.getElementById('appsGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            if (apps.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+
+            apps.forEach(app => {
+                const card = document.createElement('a');
+                card.href = app.file;
+                card.className = 'app-card';
+
+                card.innerHTML = `
+                    <div class="app-icon">${app.icon}</div>
+                    <div class="app-name">${app.name}</div>
+                    <div class="app-description">${app.description}</div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        // Load apps from apps-manifest.json if it exists
+        fetch('apps-manifest.json')
+            .then(response => response.json())
+            .then(data => {
+                apps.push(...data.apps);
+                renderApps();
+            })
+            .catch(() => {
+                // No manifest yet, show empty state
+                renderApps();
+            });
+    </script>
 </body>
 </html>
