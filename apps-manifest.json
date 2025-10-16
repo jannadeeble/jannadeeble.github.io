@@ -1,23 +1,29 @@
 {
-  "generated": "2025-10-16T08:13:18.490Z",
+  "generated": "2025-10-16T08:17:20.912Z",
   "apps": [
+    {
+      "name": "Login - Mini Apps",
+      "file": "auth.html",
+      "description": "Simple authentication for Mini Apps",
+      "icon": "🔐"
+    },
     {
       "name": "FigWorks - Project Finance Calculator",
       "file": "figworks-calculator.html",
       "description": "A mini app",
-      "icon": "📱"
+      "icon": "⚡️"
     },
     {
       "name": "Test App",
       "file": "test-app.html",
       "description": "A mini app",
-      "icon": "⚡️"
+      "icon": "🎯"
     },
     {
       "name": "Auto-Start Test",
       "file": "test-autostart.html",
       "description": "A mini app",
-      "icon": "🎯"
+      "icon": "🚀"
     }
   ]
 }

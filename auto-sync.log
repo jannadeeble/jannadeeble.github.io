@@ -88,3 +88,12 @@ Press Ctrl+C to stop auto-sync
 📝 Detected change: setup-cloudflare.js
 📝 Detected change: setup-cloudflare.js
 🔄 Syncing changes to GitHub...
+✓ Synced to GitHub successfully!
+  View at: https://jannadeeble.github.io
+
+📝 Detected change: auth.html.tmp.52173.1760602638783
+📝 Detected change: auth.html
+🔄 Syncing changes to GitHub...
+🔄 Regenerating app manifest...
+✓ Manifest updated
+
