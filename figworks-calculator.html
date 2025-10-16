@@ -1,0 +1,2268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FigWorks - Project Finance Calculator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 35px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border: 1px solid #e5e7eb;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo h1 {
+            color: #000000;
+            font-size: 36px;
+            margin-bottom: 8px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+        
+        .logo p {
+            color: #6b7280;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 28px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .step-number {
+            background: #000000;
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        
+        .step-title {
+            color: #000000;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #374151;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .label-hint {
+            font-weight: 400;
+            color: #9ca3af;
+            font-size: 13px;
+            margin-left: 6px;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.2s;
+            background: #ffffff;
+            font-family: inherit;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #000000;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+            background: #fafbfc;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+        
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+        }
+        
+        .rate-section {
+            background: #f9fafb;
+            padding: 24px;
+            border-radius: 14px;
+            margin: 24px 0;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .rate-section h3 {
+            color: #000000;
+            font-size: 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+        }
+        
+        .rate-input-wrapper {
+            position: relative;
+        }
+        
+        .rate-input-wrapper input {
+            padding-right: 40px;
+        }
+        
+        .rate-input-wrapper::after {
+            content: '%';
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-weight: 700;
+            font-size: 14px;
+            pointer-events: none;
+        }
+        
+        .highlight-box {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            color: #000000;
+            padding: 28px;
+            border-radius: 14px;
+            text-align: center;
+            margin: 28px 0;
+        }
+        
+        .highlight-box.success {
+            background: #f9fafb;
+            border-color: #d1d5db;
+        }
+        
+        .highlight-box.warning {
+            background: #f9fafb;
+            border-color: #d1d5db;
+        }
+        
+        .highlight-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+        
+        .highlight-value {
+            font-size: 36px;
+            font-weight: 800;
+            color: #111827;
+            letter-spacing: -1px;
+        }
+        
+        .highlight-subtext {
+            font-size: 13px;
+            margin-top: 10px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        .breakdown-grid {
+            display: grid;
+            gap: 0;
+            background: #fafbfc;
+            padding: 20px;
+            border-radius: 14px;
+            margin: 24px 0;
+            border: 1.5px solid #e5e7eb;
+        }
+        
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .breakdown-item:last-child {
+            border-bottom: none;
+            padding-top: 16px;
+            margin-top: 12px;
+            border-top: 2px solid #d1d5db;
+            font-weight: 700;
+        }
+        
+        .breakdown-label {
+            color: #4b5563;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .breakdown-value {
+            color: #111827;
+            font-weight: 700;
+            font-size: 15px;
+        }
+        
+        .info-box {
+            background: #f9fafb;
+            border-left: 4px solid #000000;
+            padding: 16px 18px;
+            border-radius: 10px;
+            margin: 18px 0;
+            font-size: 14px;
+            color: #374151;
+            font-weight: 500;
+        }
+        
+        .distribution-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin: 24px 0;
+        }
+        
+        .person-box {
+            background: #000000;
+            color: white;
+            padding: 28px;
+            border-radius: 14px;
+            text-align: center;
+            border: none;
+        }
+        
+        .person-name {
+            font-size: 12px;
+            opacity: 0.95;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+        
+        .person-amount {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        
+        .warning-box {
+            background: #f9fafb;
+            border-left: 4px solid #6b7280;
+            padding: 18px 20px;
+            border-radius: 10px;
+            margin: 18px 0;
+            font-size: 14px;
+            color: #374151;
+            font-weight: 500;
+        }
+        
+        button {
+            background: #000000;
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+            margin-top: 12px;
+        }
+        
+        button:hover {
+            background: #1f2937;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button.success {
+            background: #000000;
+        }
+        
+        button.success:hover {
+            background: #1f2937;
+        }
+        
+        button.secondary {
+            background: #374151;
+        }
+        
+        button.secondary:hover {
+            background: #4b5563;
+        }
+        
+        .button-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 16px;
+            margin: 18px 0;
+            flex-wrap: wrap;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background: #f9fafb;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid #e5e7eb;
+        }
+        
+        .radio-option:hover {
+            background: #f3f4f6;
+            border-color: #d1d5db;
+        }
+        
+        .radio-option input[type="radio"]:checked + label {
+            color: #000000;
+            font-weight: 700;
+        }
+        
+        .radio-option:has(input[type="radio"]:checked) {
+            background: #f3f4f6;
+            border-color: #000000;
+        }
+        
+        .radio-option input[type="radio"] {
+            width: auto;
+            margin: 0;
+            cursor: pointer;
+        }
+        
+        .invoice-preview {
+            background: white;
+            border: 2px solid #000000;
+            border-radius: 16px;
+            padding: 32px;
+            margin-top: 24px;
+            display: none;
+        }
+        
+        .invoice-preview.active {
+            display: block;
+        }
+        
+        .invoice-header {
+            text-align: center;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 3px solid #000000;
+        }
+        
+        .invoice-header h3 {
+            color: #000000;
+            font-size: 32px;
+            margin-bottom: 8px;
+            font-weight: 800;
+        }
+        
+        .invoice-header p {
+            color: #6b7280;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        
+        .invoice-text-box {
+            background: #f9fafb;
+            padding: 24px;
+            border-radius: 12px;
+            margin: 24px 0;
+            border: 1.5px solid #e5e7eb;
+        }
+        
+        .invoice-text {
+            white-space: pre-wrap;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            font-size: 13px;
+            color: #1f2937;
+            line-height: 1.7;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 28px;
+            border-bottom: 2px solid #f3f4f6;
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 800;
+            color: #000000;
+        }
+        
+        .modal-close {
+            font-size: 32px;
+            font-weight: 300;
+            color: #9ca3af;
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+        
+        .modal-close:hover {
+            color: #374151;
+        }
+        
+        .modal-body {
+            padding: 24px 28px;
+        }
+        
+        .modal-section {
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .modal-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .project-item {
+            background: #f9fafb;
+            padding: 16px 18px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border: 2px solid #e5e7eb;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .project-item:hover {
+            border-color: #000000;
+            transform: translateX(4px);
+        }
+        
+        .project-item.active {
+            background: #f3f4f6;
+            border-color: #000000;
+        }
+        
+        .project-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        
+        .project-item-name {
+            font-weight: 700;
+            font-size: 15px;
+            color: #111827;
+        }
+        
+        .project-item-client {
+            font-size: 13px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        .project-item-date {
+            font-size: 11px;
+            color: #9ca3af;
+            margin-top: 6px;
+        }
+        
+        .project-item-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .project-item-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .project-item-btn.load {
+            background: #000000;
+            color: white;
+        }
+        
+        .project-item-btn.delete {
+            background: #f3f4f6;
+            color: #6b7280;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .project-item-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        
+        @media (max-width: 600px) {
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .distribution-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .highlight-value {
+                font-size: 32px;
+            }
+            
+            .card {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- LOGO -->
+        <div class="card">
+            <div class="logo">
+                <h1>FIGWORKS</h1>
+                <p>Project Finance Calculator</p>
+            </div>
+        </div>
+        
+        <!-- PROJECT MANAGEMENT -->
+        <div class="card" style="background: #f9fafb; border: 2px solid #e5e7eb;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div>
+                    <h2 style="font-size: 14px; margin-bottom: 5px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Current Project</h2>
+                    <p id="currentProjectDisplay" style="font-size: 22px; margin: 0; font-weight: 700; color: #000000;">No Project Selected</p>
+                </div>
+                <button onclick="showProjectModal()" style="background: #000000; padding: 12px 20px; color: white; font-weight: 700; box-shadow: none; width: auto;">
+                    📁 Manage Projects
+                </button>
+            </div>
+        </div>
+        
+        <!-- PROJECT MODAL -->
+        <div id="projectModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Project Management</h2>
+                    <span class="modal-close" onclick="closeProjectModal()">&times;</span>
+                </div>
+                
+                <div class="modal-body">
+                    <!-- Create New Project -->
+                    <div class="modal-section">
+                        <h3 style="color: #000000; margin-bottom: 15px; font-weight: 700; font-size: 16px;">📝 Create New Project</h3>
+                        <div class="input-group">
+                            <label>Project Name</label>
+                            <input type="text" id="newProjectName" placeholder="e.g., Living Room Furniture Set">
+                        </div>
+                        <div class="input-group">
+                            <label>Client Name</label>
+                            <input type="text" id="newClientName" placeholder="e.g., Acme Corporation">
+                        </div>
+                        <button onclick="createNewProject()" class="success" style="margin-top: 10px;">✨ Create Project</button>
+                    </div>
+                    
+                    <!-- Select Existing Project -->
+                    <div class="modal-section" id="existingProjectsSection">
+                        <h3 style="color: #000000; margin-bottom: 15px; font-weight: 700; font-size: 16px;">📂 Existing Projects</h3>
+                        <div id="projectList"></div>
+                    </div>
+                    
+                    <!-- Export/Import -->
+                    <div class="modal-section">
+                        <h3 style="color: #000000; margin-bottom: 15px; font-weight: 700; font-size: 16px;">💾 Backup & Restore</h3>
+                        <div class="button-grid">
+                            <button onclick="exportAllProjects()" class="secondary">📤 Export All Projects</button>
+                            <button onclick="document.getElementById('importFile').click()" class="secondary">📥 Import Projects</button>
+                        </div>
+                        <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importProjects(event)">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- STEP 1: PROJECT QUOTE -->
+        <div class="card">
+            <div class="step-header">
+                <div class="step-number">1</div>
+                <div class="step-title">Project Quote Setup</div>
+            </div>
+            
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>Quoted Days</label>
+                    <input type="number" id="quotedDays" value="5" min="0" step="0.5">
+                </div>
+                
+                <div class="input-group">
+                    <label>Day Rate (KES)</label>
+                    <input type="number" id="dayRate" value="3000" min="0" step="100">
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label>Estimated Materials Cost (KES) <span class="label-hint">- External materials you'll need to buy</span></label>
+                <input type="number" id="materials" value="0" min="0" step="100">
+            </div>
+            
+            <div class="rate-section">
+                <h3>⚙️ Commission & Contingency Rates</h3>
+                <div class="info-box">
+                    These percentages are applied to the baseline (Labour + Materials) to calculate the suggested base rate.
+                </div>
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label>Workshop Commission</label>
+                        <div class="rate-input-wrapper">
+                            <input type="number" id="workshopRate" value="20" min="0" max="100" step="1">
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Acquisition Commission</label>
+                        <div class="rate-input-wrapper">
+                            <input type="number" id="acquisitionRate" value="20" min="0" max="100" step="1">
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Buffer Contingency</label>
+                        <div class="rate-input-wrapper">
+                            <input type="number" id="leewayRate" value="10" min="0" max="100" step="1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="secondary" onclick="calculateBaseRate()">📊 Calculate Suggested Base Rate</button>
+            
+            <div id="baseRateDisplay" class="highlight-box hidden">
+                <div class="highlight-label">Suggested Base Rate</div>
+                <div class="highlight-value">KES <span id="baseRateValue">0</span></div>
+                <div class="highlight-subtext">This covers all costs + commissions + contingency buffer</div>
+            </div>
+            
+            <div id="baseRateBreakdown" class="breakdown-grid hidden">
+                <div class="breakdown-item">
+                    <span class="breakdown-label">Labour (Days × Rate)</span>
+                    <span class="breakdown-value" id="labourAmount">KES 0</span>
+                </div>
+                <div class="breakdown-item">
+                    <span class="breakdown-label">Materials</span>
+                    <span class="breakdown-value" id="materialsAmount">KES 0</span>
+                </div>
+                <div class="breakdown-item">
+                    <span class="breakdown-label">Workshop Commission</span>
+                    <span class="breakdown-value" id="workshopAmount">KES 0</span>
+                </div>
+                <div class="breakdown-item">
+                    <span class="breakdown-label">Acquisition Commission</span>
+                    <span class="breakdown-value" id="acquisitionAmount">KES 0</span>
+                </div>
+                <div class="breakdown-item">
+                    <span class="breakdown-label">Buffer</span>
+                    <span class="breakdown-value" id="leewayAmount">KES 0</span>
+                </div>
+                <div class="breakdown-item">
+                    <span class="breakdown-label">Total Base Rate</span>
+                    <span class="breakdown-value" id="totalBaseRate">KES 0</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- STEP 2: CLIENT AGREEMENT -->
+        <div class="card">
+            <div class="step-header">
+                <div class="step-number">2</div>
+                <div class="step-title">Client Agreement</div>
+            </div>
+            
+            <div class="input-group">
+                <label>Actual Client Invoice Amount (KES) <span class="label-hint">- What you actually agreed with the client</span></label>
+                <input type="number" id="invoiceTotal" value="0" min="0" step="100">
+            </div>
+            
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>Acquired By</label>
+                    <select id="acquisitionBy">
+                        <option value="kelvin">Kelvin</option>
+                        <option value="janna">Janna</option>
+                        <option value="shared">Shared (Split 50/50)</option>
+                        <option value="other">Other Person</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label>Profit Pool Goes To</label>
+                    <select id="profitPoolCreator">
+                        <option value="kelvin">Kelvin (30% to Kelvin, 70% to Janna)</option>
+                        <option value="janna">Janna (100%)</option>
+                        <option value="shared">Shared (Split 50/50)</option>
+                        <option value="other">Other Person</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button class="success" onclick="calculateProfitPool()">💰 Calculate Profit Pool</button>
+            
+            <div id="profitPoolDisplay" class="highlight-box success hidden">
+                <div class="highlight-label">Profit Pool</div>
+                <div class="highlight-value">KES <span id="profitPoolValue">0</span></div>
+                <div class="highlight-subtext">Invoice Amount - Base Rate = Profit to distribute</div>
+            </div>
+        </div>
+        
+        <!-- STEP 3: GENERATE INVOICE/QUOTE -->
+        <div class="card">
+            <div class="step-header">
+                <div class="step-number">3</div>
+                <div class="step-title">Generate Document</div>
+            </div>
+            
+            <div class="radio-group">
+                <label class="radio-option">
+                    <input type="radio" name="documentType" value="quote" id="docQuote" checked>
+                    <label for="docQuote">Quote</label>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="documentType" value="invoice" id="docInvoice">
+                    <label for="docInvoice">Invoice</label>
+                </label>
+            </div>
+            
+            <div class="input-group">
+                <label><span id="docNumLabel">Quote</span> Number</label>
+                <input type="text" id="invoiceNumber" placeholder="e.g., FW-2024-001">
+            </div>
+            
+            <div class="input-group">
+                <label>Notes (Optional)</label>
+                <textarea id="notes" placeholder="Thank you for your business! Payment via M-Pesa: 0705 626 136"></textarea>
+            </div>
+            
+            <button onclick="generateInvoice()">📄 Generate Document</button>
+            
+            <div id="invoicePreview" class="invoice-preview">
+                <div class="invoice-header">
+                    <h3>FIGWORKS</h3>
+                    <p>Project Finance Calculator</p>
+                </div>
+                
+                <div class="invoice-text-box">
+                    <div class="invoice-text" id="invoiceText"></div>
+                </div>
+                
+                <div class="button-grid">
+                    <button onclick="copyInvoice()" style="background: #000000;">
+                        📋 Copy for WhatsApp
+                    </button>
+                    <button onclick="exportInvoicePDF()" style="background: #374151;">
+                        📥 Download PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- STEP 4: FINAL RECONCILIATION -->
+        <div class="card">
+            <div class="step-header">
+                <div class="step-number">4</div>
+                <div class="step-title">Final Reconciliation (After Project)</div>
+            </div>
+            
+            <div class="warning-box">
+                <strong>How Money Flows:</strong>
+                <ul style="margin: 10px 0 0 20px; line-height: 1.8;">
+                    <li><strong>Hard Costs Paid First:</strong> External materials, workshop materials, workshop commission, quoted labour</li>
+                    <li><strong>Buffer Priority:</strong>
+                        <ul style="margin: 5px 0 0 20px;">
+                            <li>1st: Unexpected costs (highest priority - already spent)</li>
+                            <li>2nd: Overrun labour (to Kelvin at 50% rate)</li>
+                            <li>3rd: Remainder goes to profit pool</li>
+                        </ul>
+                    </li>
+                    <li><strong>If Buffer Exhausted:</strong> Profit pool covers remaining unexpected costs & overrun</li>
+                    <li><strong>Acquisition Commission:</strong> Only paid if profit pool has money left</li>
+                    <li><strong>Final Profit:</strong> Distributed according to rules (if any remains)</li>
+                </ul>
+            </div>
+            
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>External Materials Purchased (KES) <span class="label-hint">- Straight deduction from invoice</span></label>
+                    <input type="number" id="externalMaterials" value="0" min="0" step="100">
+                </div>
+                
+                <div class="input-group">
+                    <label>Workshop Materials Used (KES) <span class="label-hint">- Goes to workshop (Janna)</span></label>
+                    <input type="number" id="workshopMaterials" value="0" min="0" step="100">
+                </div>
+            </div>
+            
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>Days Overrun (Beyond Quote) <span class="label-hint">- Paid from buffer/profit at 50% rate</span></label>
+                    <input type="number" id="overrunDays" value="0" min="0" step="0.5">
+                </div>
+                
+                <div class="input-group">
+                    <label>Unexpected Costs (KES) <span class="label-hint">- Highest priority, paid from buffer first</span></label>
+                    <input type="number" id="unexpectedCosts" value="0" min="0" step="100">
+                </div>
+            </div>
+            
+            <button onclick="calculateFinalReconciliation()">🧮 Calculate Final Distribution</button>
+            
+            <button id="exportPdfButton" onclick="exportReconciliationPDF()" style="display: none; background: #374151; margin-top: 10px;">📥 Export Calculations PDF</button>
+            
+            <div id="reconciliationResults" class="hidden">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; cursor: pointer; padding: 18px; background: #f9fafb; border-radius: 12px; border: 1.5px solid #e5e7eb;" onclick="toggleMoneyFlow()">
+                    <h3 style="color: #000000; margin: 0; font-weight: 800; font-size: 18px;">💰 Money Flow Details</h3>
+                    <span id="moneyFlowToggle" style="color: #000000; font-size: 20px; font-weight: 700;">▶</span>
+                </div>
+                
+                <div id="moneyFlowSection" style="display: none;">
+                    <div class="breakdown-grid">
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">Invoice Amount</span>
+                            <span class="breakdown-value" id="invoiceAmount">KES 0</span>
+                        </div>
+                    </div>
+                    
+                    <h3 style="color: #374151; margin: 20px 0 15px 0; font-size: 16px; font-weight: 700;">Hard Deductions (Always Paid First)</h3>
+                    <div class="breakdown-grid">
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">External Materials (to suppliers)</span>
+                            <span class="breakdown-value" id="finalExternalMat">KES 0</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">Workshop Materials (to Janna)</span>
+                            <span class="breakdown-value" id="finalWorkshopMat">KES 0</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">Workshop Commission (to Janna)</span>
+                            <span class="breakdown-value" id="finalWorkshopComm">KES 0</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">Quoted Labour (to Kelvin)</span>
+                            <span class="breakdown-value" id="finalLabour">KES 0</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">Remaining After Hard Costs</span>
+                            <span class="breakdown-value" id="afterHardCosts">KES 0</span>
+                        </div>
+                    </div>
+                    
+                    <h3 style="color: #374151; margin: 20px 0 15px 0; font-size: 16px; font-weight: 700;">Buffer Allocation (Priority Order)</h3>
+                    <div class="breakdown-grid">
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">Available Buffer</span>
+                            <span class="breakdown-value" id="leewayAvailableDisplay">KES 0</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">1. Unexpected Costs (Highest Priority)</span>
+                            <span class="breakdown-value" id="unexpectedTotal">KES 0</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">Paid from Buffer</span>
+                            <span class="breakdown-value" id="unexpectedPaidLeeway">KES 0</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">Paid from Profit Pool</span>
+                            <span class="breakdown-value" id="unexpectedPaidProfit">KES 0</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">2. Overrun Labour (to Kelvin, 50% rate)</span>
+                            <span class="breakdown-value" id="overrunTotal">KES 0</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">Paid from Buffer</span>
+                            <span class="breakdown-value" id="overrunPaidLeeway">KES 0</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">Paid from Profit Pool</span>
+                            <span class="breakdown-value" id="overrunPaidProfit">KES 0</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">Overrun Labour UNPAID</span>
+                            <span class="breakdown-value" id="overrunUnpaid" style="color: #dc2626;">KES 0</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">Total Buffer Used</span>
+                            <span class="breakdown-value" id="leewayUsed">KES 0</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">Buffer to Profit Pool</span>
+                            <span class="breakdown-value" id="leewayToProfit">KES 0</span>
+                        </div>
+                    </div>
+                    
+                    <h3 style="color: #374151; margin: 20px 0 15px 0; font-size: 16px; font-weight: 700;">Profit Pool Distribution</h3>
+                    <div class="breakdown-grid">
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">Remaining + Unused Buffer</span>
+                            <span class="breakdown-value" id="profitPoolBeforeAcq">KES 0</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">Acquisition Commission</span>
+                            <span class="breakdown-value" id="finalAcqComm">KES 0</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span class="breakdown-label">Final Profit for Distribution</span>
+                            <span class="breakdown-value" id="finalProfitAmount">KES 0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3 style="color: #000000; margin: 32px 0 18px 0; font-size: 20px; text-align: center; font-weight: 800;">📊 FINAL TOTALS</h3>
+                <div class="distribution-grid">
+                    <div class="person-box">
+                        <div class="person-name">Kelvin</div>
+                        <div class="person-amount" id="kelvinTotal">KES 0</div>
+                        <div style="font-size: 11px; margin-top: 10px; opacity: 0.9; line-height: 1.5;" id="kelvinBreakdown"></div>
+                    </div>
+                    <div class="person-box" style="background: #374151;">
+                        <div class="person-name">Janna / Workshop</div>
+                        <div class="person-amount" id="jannaTotal">KES 0</div>
+                        <div style="font-size: 11px; margin-top: 10px; opacity: 0.9; line-height: 1.5;" id="jannaBreakdown"></div>
+                    </div>
+                </div>
+                
+                <div id="varianceDisplay" class="info-box"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let state = {
+            baseRate: 0,
+            profitPool: 0,
+            currentProject: null,
+            projectName: '',
+            clientName: ''
+        };
+        
+        // Project Management Functions
+        function showProjectModal() {
+            document.getElementById('projectModal').style.display = 'flex';
+            loadProjectList();
+        }
+        
+        function closeProjectModal() {
+            document.getElementById('projectModal').style.display = 'none';
+        }
+        
+        function loadProjectList() {
+            const projects = getAllProjects();
+            const projectList = document.getElementById('projectList');
+            
+            if (projects.length === 0) {
+                projectList.innerHTML = '<p style="color: #9ca3af; text-align: center; padding: 20px;">No projects yet. Create your first project above!</p>';
+                return;
+            }
+            
+            projectList.innerHTML = projects.map(project => `
+                <div class="project-item ${project.id === state.currentProject ? 'active' : ''}" onclick="event.stopPropagation();">
+                    <div class="project-item-header">
+                        <div>
+                            <div class="project-item-name">${escapeHtml(project.projectName)}</div>
+                            <div class="project-item-client">Client: ${escapeHtml(project.clientName)}</div>
+                        </div>
+                        <div class="project-item-actions">
+                            <button class="project-item-btn load" onclick="loadProject('${project.id}')">Load</button>
+                            <button class="project-item-btn delete" onclick="deleteProject('${project.id}')">Delete</button>
+                        </div>
+                    </div>
+                    <div class="project-item-date">Last updated: ${new Date(project.lastModified).toLocaleDateString('en-KE', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
+                </div>
+            `).join('');
+        }
+        
+        function createNewProject() {
+            const projectName = document.getElementById('newProjectName').value.trim();
+            const clientName = document.getElementById('newClientName').value.trim();
+            
+            if (!projectName) {
+                alert('Please enter a project name');
+                return;
+            }
+            
+            if (!clientName) {
+                alert('Please enter a client name');
+                return;
+            }
+            
+            const projectId = 'project_' + Date.now();
+            
+            const project = {
+                id: projectId,
+                projectName: projectName,
+                clientName: clientName,
+                created: new Date().toISOString(),
+                lastModified: new Date().toISOString(),
+                data: getDefaultProjectData()
+            };
+            
+            saveProjectToStorage(project);
+            loadProject(projectId);
+            
+            // Clear inputs
+            document.getElementById('newProjectName').value = '';
+            document.getElementById('newClientName').value = '';
+            
+            closeProjectModal();
+        }
+        
+        function loadProject(projectId) {
+            const project = getProjectFromStorage(projectId);
+            if (!project) {
+                alert('Project not found');
+                return;
+            }
+            
+            state.currentProject = projectId;
+            state.projectName = project.projectName;
+            state.clientName = project.clientName;
+            
+            // Remember this project for next load
+            localStorage.setItem('figworks_last_project', projectId);
+            
+            // Load project data into form
+            const data = project.data;
+            document.getElementById('quotedDays').value = data.quotedDays || 5;
+            document.getElementById('dayRate').value = data.dayRate || 3000;
+            document.getElementById('materials').value = data.materials || 0;
+            document.getElementById('workshopRate').value = data.workshopRate || 20;
+            document.getElementById('acquisitionRate').value = data.acquisitionRate || 20;
+            document.getElementById('leewayRate').value = data.leewayRate || 10;
+            document.getElementById('acquisitionBy').value = data.acquisitionBy || 'kelvin';
+            document.getElementById('profitPoolCreator').value = data.profitPoolCreator || 'kelvin';
+            document.getElementById('invoiceTotal').value = data.invoiceTotal || 0;
+            document.getElementById('invoiceNumber').value = data.invoiceNumber || '';
+            document.getElementById('notes').value = data.notes || 'Thank you for your business!\nPayment via M-Pesa: 0705 626 136';
+            document.getElementById('externalMaterials').value = data.externalMaterials || 0;
+            document.getElementById('workshopMaterials').value = data.workshopMaterials || 0;
+            document.getElementById('overrunDays').value = data.overrunDays || 0;
+            document.getElementById('unexpectedCosts').value = data.unexpectedCosts || 0;
+            
+            // Update state
+            state.baseRate = data.baseRate || 0;
+            state.profitPool = data.profitPool || 0;
+            
+            updateCurrentProjectDisplay();
+            closeProjectModal();
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function deleteProject(projectId) {
+            if (!confirm('Are you sure you want to delete this project? This cannot be undone.')) {
+                return;
+            }
+            
+            const projects = getAllProjects().filter(p => p.id !== projectId);
+            localStorage.setItem('figworks_projects', JSON.stringify(projects));
+            
+            if (state.currentProject === projectId) {
+                state.currentProject = null;
+                state.projectName = '';
+                state.clientName = '';
+                updateCurrentProjectDisplay();
+            }
+            
+            loadProjectList();
+        }
+        
+        function updateCurrentProjectDisplay() {
+            const display = document.getElementById('currentProjectDisplay');
+            if (state.currentProject) {
+                display.textContent = `${state.projectName} - ${state.clientName}`;
+            } else {
+                display.textContent = 'No Project Selected';
+            }
+        }
+        
+        function getAllProjects() {
+            const stored = localStorage.getItem('figworks_projects');
+            return stored ? JSON.parse(stored) : [];
+        }
+        
+        function getProjectFromStorage(projectId) {
+            const projects = getAllProjects();
+            return projects.find(p => p.id === projectId);
+        }
+        
+        function saveProjectToStorage(project) {
+            const projects = getAllProjects();
+            const index = projects.findIndex(p => p.id === project.id);
+            
+            if (index >= 0) {
+                projects[index] = project;
+            } else {
+                projects.push(project);
+            }
+            
+            localStorage.setItem('figworks_projects', JSON.stringify(projects));
+        }
+        
+        function getDefaultProjectData() {
+            return {
+                quotedDays: 5,
+                dayRate: 3000,
+                materials: 0,
+                workshopRate: 20,
+                acquisitionRate: 20,
+                leewayRate: 10,
+                acquisitionBy: 'kelvin',
+                profitPoolCreator: 'kelvin',
+                invoiceTotal: 0,
+                invoiceNumber: '',
+                notes: 'Thank you for your business!\nPayment via M-Pesa: 0705 626 136',
+                externalMaterials: 0,
+                workshopMaterials: 0,
+                overrunDays: 0,
+                unexpectedCosts: 0,
+                baseRate: 0,
+                profitPool: 0
+            };
+        }
+        
+        function exportAllProjects() {
+            const projects = getAllProjects();
+            if (projects.length === 0) {
+                alert('No projects to export');
+                return;
+            }
+            
+            const dataStr = JSON.stringify(projects, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `FigWorks_Projects_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function importProjects(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    
+                    if (!Array.isArray(imported)) {
+                        alert('Invalid file format');
+                        return;
+                    }
+                    
+                    const existing = getAllProjects();
+                    const merged = [...existing];
+                    
+                    let newCount = 0;
+                    let updatedCount = 0;
+                    
+                    imported.forEach(project => {
+                        const existingIndex = merged.findIndex(p => p.id === project.id);
+                        if (existingIndex >= 0) {
+                            merged[existingIndex] = project;
+                            updatedCount++;
+                        } else {
+                            merged.push(project);
+                            newCount++;
+                        }
+                    });
+                    
+                    localStorage.setItem('figworks_projects', JSON.stringify(merged));
+                    loadProjectList();
+                    alert(`Import successful!\n${newCount} new projects added\n${updatedCount} existing projects updated`);
+                    
+                } catch (err) {
+                    alert('Error reading file: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+            
+            // Reset file input
+            event.target.value = '';
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Format currency
+        function fmt(amount) {
+            return Math.round(amount).toLocaleString('en-KE');
+        }
+        
+        // Save to current project
+        function save() {
+            if (!state.currentProject) {
+                // No project selected, don't save
+                return;
+            }
+            
+            const project = getProjectFromStorage(state.currentProject);
+            if (!project) return;
+            
+            project.data = {
+                quotedDays: document.getElementById('quotedDays').value,
+                dayRate: document.getElementById('dayRate').value,
+                materials: document.getElementById('materials').value,
+                workshopRate: document.getElementById('workshopRate').value,
+                acquisitionRate: document.getElementById('acquisitionRate').value,
+                leewayRate: document.getElementById('leewayRate').value,
+                acquisitionBy: document.getElementById('acquisitionBy').value,
+                profitPoolCreator: document.getElementById('profitPoolCreator').value,
+                invoiceTotal: document.getElementById('invoiceTotal').value,
+                invoiceNumber: document.getElementById('invoiceNumber').value,
+                notes: document.getElementById('notes').value,
+                externalMaterials: document.getElementById('externalMaterials').value,
+                workshopMaterials: document.getElementById('workshopMaterials').value,
+                overrunDays: document.getElementById('overrunDays').value,
+                unexpectedCosts: document.getElementById('unexpectedCosts').value,
+                baseRate: state.baseRate,
+                profitPool: state.profitPool
+            };
+            
+            project.lastModified = new Date().toISOString();
+            saveProjectToStorage(project);
+        }
+        
+        // Load from localStorage (deprecated - now uses project system)
+        function load() {
+            // Check if there's a last active project
+            const lastProject = localStorage.getItem('figworks_last_project');
+            if (lastProject) {
+                const project = getProjectFromStorage(lastProject);
+                if (project) {
+                    loadProject(lastProject);
+                    return;
+                }
+            }
+            
+            // If no last project, check if there are any projects
+            const projects = getAllProjects();
+            if (projects.length > 0) {
+                // Show modal to select a project
+                showProjectModal();
+            }
+        }
+        
+        // Calculate base rate
+        function calculateBaseRate() {
+            if (!state.currentProject) {
+                alert('Please create or select a project first');
+                showProjectModal();
+                return;
+            }
+            
+            const days = parseFloat(document.getElementById('quotedDays').value) || 0;
+            const rate = parseFloat(document.getElementById('dayRate').value) || 0;
+            const materials = parseFloat(document.getElementById('materials').value) || 0;
+            
+            const workshopRate = parseFloat(document.getElementById('workshopRate').value) / 100 || 0;
+            const acquisitionRate = parseFloat(document.getElementById('acquisitionRate').value) / 100 || 0;
+            const leewayRate = parseFloat(document.getElementById('leewayRate').value) / 100 || 0;
+            
+            const labour = days * rate;
+            const baseline = labour + materials;
+            
+            const workshopComm = baseline * workshopRate;
+            const acquisitionComm = baseline * acquisitionRate;
+            const leeway = baseline * leewayRate;
+            
+            state.baseRate = baseline + workshopComm + acquisitionComm + leeway;
+            
+            // Display
+            document.getElementById('baseRateValue').textContent = fmt(state.baseRate);
+            document.getElementById('labourAmount').textContent = 'KES ' + fmt(labour);
+            document.getElementById('materialsAmount').textContent = 'KES ' + fmt(materials);
+            document.getElementById('workshopAmount').textContent = 'KES ' + fmt(workshopComm);
+            document.getElementById('acquisitionAmount').textContent = 'KES ' + fmt(acquisitionComm);
+            document.getElementById('leewayAmount').textContent = 'KES ' + fmt(leeway);
+            document.getElementById('totalBaseRate').textContent = 'KES ' + fmt(state.baseRate);
+            
+            document.getElementById('baseRateDisplay').classList.remove('hidden');
+            document.getElementById('baseRateBreakdown').classList.remove('hidden');
+            
+            save();
+        }
+        
+        // Calculate profit pool
+        function calculateProfitPool() {
+            if (state.baseRate === 0) {
+                alert('Please calculate the base rate first (Step 1)');
+                return;
+            }
+            
+            const invoiceTotal = parseFloat(document.getElementById('invoiceTotal').value) || 0;
+            
+            if (invoiceTotal === 0) {
+                alert('Please enter the client invoice amount');
+                return;
+            }
+            
+            state.profitPool = Math.max(0, invoiceTotal - state.baseRate);
+            
+            document.getElementById('profitPoolValue').textContent = fmt(state.profitPool);
+            document.getElementById('profitPoolDisplay').classList.remove('hidden');
+            
+            save();
+        }
+        
+        // Generate invoice
+        function generateInvoice() {
+            if (!state.currentProject) {
+                alert('Please create or select a project first');
+                showProjectModal();
+                return;
+            }
+            
+            const docType = document.querySelector('input[name="documentType"]:checked').value;
+            const docTypeTitle = docType === 'quote' ? 'QUOTE' : 'INVOICE';
+            
+            const invoiceNum = document.getElementById('invoiceNumber').value || 'DRAFT';
+            const clientName = state.clientName;
+            const projectTitle = state.projectName;
+            const total = parseFloat(document.getElementById('invoiceTotal').value) || 0;
+            const notes = document.getElementById('notes').value || 'Thank you for your business!\nPayment via M-Pesa: 0705 626 136';
+            
+            const date = new Date().toLocaleDateString('en-KE', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            const text = `┌────────────────────────────┐
+          FIGWORKS
+    Project Finance Calculator
+    M-Pesa: 0705 626 136
+└────────────────────────────┘
+
+${docTypeTitle}
+────────────────────────────
+
+${docTypeTitle} #: ${invoiceNum}
+Date: ${date}
+
+Client: ${clientName}
+Project: ${projectTitle}
+
+────────────────────────────
+       TOTAL AMOUNT
+       KES ${fmt(total)}
+────────────────────────────
+
+${notes}
+
+────────────────────────────
+Generated by FigWorks Calculator
+────────────────────────────`;
+            
+            document.getElementById('invoiceText').textContent = text;
+            document.getElementById('invoicePreview').classList.remove('hidden');
+            document.getElementById('invoicePreview').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            
+            save();
+        }
+        
+        // Copy invoice to clipboard
+        function copyInvoice() {
+            const text = document.getElementById('invoiceText').textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✓ Copied!';
+                btn.style.background = '#374151';
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '#000000';
+                }, 2000);
+            }).catch(() => {
+                alert('Please copy the text manually');
+            });
+        }
+        
+        // Calculate final reconciliation
+        function calculateFinalReconciliation() {
+            if (!state.currentProject) {
+                alert('Please create or select a project first');
+                showProjectModal();
+                return;
+            }
+            
+            if (state.baseRate === 0) {
+                alert('Please complete Steps 1 and 2 first');
+                return;
+            }
+            
+            // Get input values
+            const days = parseFloat(document.getElementById('quotedDays').value) || 0;
+            const rate = parseFloat(document.getElementById('dayRate').value) || 0;
+            const estimatedMaterials = parseFloat(document.getElementById('materials').value) || 0;
+            const invoiceTotal = parseFloat(document.getElementById('invoiceTotal').value) || 0;
+            
+            const externalMat = parseFloat(document.getElementById('externalMaterials').value) || 0;
+            const workshopMat = parseFloat(document.getElementById('workshopMaterials').value) || 0;
+            const overrunDays = parseFloat(document.getElementById('overrunDays').value) || 0;
+            const unexpected = parseFloat(document.getElementById('unexpectedCosts').value) || 0;
+            
+            const workshopRate = parseFloat(document.getElementById('workshopRate').value) / 100 || 0;
+            const acquisitionRate = parseFloat(document.getElementById('acquisitionRate').value) / 100 || 0;
+            const leewayRate = parseFloat(document.getElementById('leewayRate').value) / 100 || 0;
+            
+            const acquisitionBy = document.getElementById('acquisitionBy').value;
+            const profitPoolCreator = document.getElementById('profitPoolCreator').value;
+            
+            // Base calculations
+            const quotedLabour = days * rate;
+            const baseline = quotedLabour + estimatedMaterials;
+            
+            const workshopComm = baseline * workshopRate;
+            const acquisitionComm = baseline * acquisitionRate;
+            const totalLeeway = baseline * leewayRate;
+            
+            // Calculate overrun labour cost
+            const overrunCost = overrunDays * rate * 0.5;
+            
+            // STEP 1: Hard deductions (always paid)
+            const hardCosts = externalMat + workshopMat + workshopComm + quotedLabour;
+            const afterHardCosts = invoiceTotal - hardCosts;
+            
+            // STEP 2: Use buffer for unexpected costs (priority 1) and overrun labour (priority 2)
+            let leewayRemaining = totalLeeway;
+            
+            // Pay unexpected costs from buffer first
+            const unexpectedFromLeeway = Math.min(unexpected, leewayRemaining);
+            leewayRemaining -= unexpectedFromLeeway;
+            
+            // Pay overrun labour from remaining buffer
+            const overrunFromLeeway = Math.min(overrunCost, leewayRemaining);
+            leewayRemaining -= overrunFromLeeway;
+            
+            // Unused buffer goes to profit pool
+            const leewayToProfit = leewayRemaining;
+            const leewayUsed = totalLeeway - leewayToProfit;
+            
+            // STEP 3: Calculate profit pool - subtract ALL costs (unexpected + overrun) from remaining
+            // Buffer is just for tracking which costs were "budgeted" vs "unbudgeted"
+            let profitPool = afterHardCosts - unexpected - overrunCost;
+            
+            // Calculate what was unpaid (if profit pool went negative, some costs couldn't be covered)
+            const actualProfitPool = Math.max(0, profitPool);
+            const shortfall = Math.max(0, -profitPool);
+            
+            // Recalculate what was actually paid
+            let totalUnexpectedPaid = unexpected;
+            let totalOverrunPaid = overrunCost;
+            
+            if (shortfall > 0) {
+                // Not enough money - need to figure out what didn't get paid
+                // Unexpected has priority, so it gets paid first
+                if (shortfall <= overrunCost) {
+                    // Overrun is partially or fully unpaid
+                    totalOverrunPaid = overrunCost - shortfall;
+                } else {
+                    // Overrun completely unpaid, and some unexpected also unpaid
+                    totalOverrunPaid = 0;
+                    totalUnexpectedPaid = unexpected - (shortfall - overrunCost);
+                }
+            }
+            
+            const overrunUnpaid = overrunCost - totalOverrunPaid;
+            const unexpectedUnpaid = unexpected - totalUnexpectedPaid;
+            
+            profitPool = actualProfitPool;
+            
+            // STEP 5: Acquisition commission comes from profit pool (only if available)
+            const profitPoolBeforeAcq = profitPool;
+            const actualAcqComm = Math.min(acquisitionComm, profitPool);
+            profitPool -= actualAcqComm;
+            
+            // STEP 6: Final profit pool for distribution
+            const finalProfit = profitPool;
+            
+            // DISPLAY ALL VALUES
+            document.getElementById('invoiceAmount').textContent = 'KES ' + fmt(invoiceTotal);
+            
+            // Hard deductions
+            document.getElementById('finalExternalMat').textContent = 'KES ' + fmt(externalMat);
+            document.getElementById('finalWorkshopMat').textContent = 'KES ' + fmt(workshopMat);
+            document.getElementById('finalWorkshopComm').textContent = 'KES ' + fmt(workshopComm);
+            document.getElementById('finalLabour').textContent = 'KES ' + fmt(quotedLabour);
+            document.getElementById('afterHardCosts').textContent = 'KES ' + fmt(afterHardCosts);
+            
+            // Buffer
+            document.getElementById('leewayAvailableDisplay').textContent = 'KES ' + fmt(totalLeeway);
+            document.getElementById('unexpectedTotal').textContent = 'KES ' + fmt(unexpected);
+            document.getElementById('unexpectedPaidLeeway').textContent = 'KES ' + fmt(unexpectedFromLeeway);
+            document.getElementById('unexpectedPaidProfit').textContent = 'KES ' + fmt(Math.max(0, totalUnexpectedPaid - unexpectedFromLeeway));
+            document.getElementById('overrunTotal').textContent = 'KES ' + fmt(overrunCost);
+            document.getElementById('overrunPaidLeeway').textContent = 'KES ' + fmt(overrunFromLeeway);
+            document.getElementById('overrunPaidProfit').textContent = 'KES ' + fmt(Math.max(0, totalOverrunPaid - overrunFromLeeway));
+            document.getElementById('overrunUnpaid').textContent = 'KES ' + fmt(overrunUnpaid);
+            document.getElementById('leewayUsed').textContent = 'KES ' + fmt(leewayUsed);
+            document.getElementById('leewayToProfit').textContent = 'KES ' + fmt(leewayToProfit);
+            
+            // Profit pool
+            document.getElementById('profitPoolBeforeAcq').textContent = 'KES ' + fmt(profitPoolBeforeAcq);
+            document.getElementById('finalAcqComm').textContent = 'KES ' + fmt(actualAcqComm);
+            document.getElementById('finalProfitAmount').textContent = 'KES ' + fmt(finalProfit);
+            
+            // CALCULATE FINAL TOTALS
+            let kelvinTotal = 0;
+            let jannaTotal = 0;
+            
+            let kelvinItems = [];
+            let jannaItems = [];
+            
+            // Kelvin gets quoted labour
+            kelvinTotal += quotedLabour;
+            kelvinItems.push(`Labour: ${fmt(quotedLabour)}`);
+            
+            // Kelvin gets paid overrun labour
+            if (totalOverrunPaid > 0) {
+                kelvinTotal += totalOverrunPaid;
+                kelvinItems.push(`Overrun: ${fmt(totalOverrunPaid)}`);
+            }
+            
+            // Janna gets workshop materials + commission
+            jannaTotal += workshopMat + workshopComm;
+            jannaItems.push(`Materials: ${fmt(workshopMat)}`);
+            jannaItems.push(`Commission: ${fmt(workshopComm)}`);
+            
+            // Acquisition commission
+            if (actualAcqComm > 0) {
+                if (acquisitionBy === 'kelvin') {
+                    kelvinTotal += actualAcqComm;
+                    kelvinItems.push(`Acquisition: ${fmt(actualAcqComm)}`);
+                } else if (acquisitionBy === 'janna') {
+                    jannaTotal += actualAcqComm;
+                    jannaItems.push(`Acquisition: ${fmt(actualAcqComm)}`);
+                } else if (acquisitionBy === 'shared') {
+                    const acqSplit = actualAcqComm / 2;
+                    kelvinTotal += acqSplit;
+                    jannaTotal += acqSplit;
+                    kelvinItems.push(`Acq (50%): ${fmt(acqSplit)}`);
+                    jannaItems.push(`Acq (50%): ${fmt(acqSplit)}`);
+                }
+            }
+            
+            // Final profit distribution
+            if (finalProfit > 0) {
+                if (profitPoolCreator === 'kelvin') {
+                    const kelvinProfit = finalProfit * 0.3;
+                    const jannaProfit = finalProfit * 0.7;
+                    kelvinTotal += kelvinProfit;
+                    jannaTotal += jannaProfit;
+                    kelvinItems.push(`Profit (30%): ${fmt(kelvinProfit)}`);
+                    jannaItems.push(`Profit (70%): ${fmt(jannaProfit)}`);
+                } else if (profitPoolCreator === 'janna') {
+                    jannaTotal += finalProfit;
+                    jannaItems.push(`Profit: ${fmt(finalProfit)}`);
+                } else if (profitPoolCreator === 'shared') {
+                    const profitSplit = finalProfit / 2;
+                    kelvinTotal += profitSplit;
+                    jannaTotal += profitSplit;
+                    kelvinItems.push(`Profit (50%): ${fmt(profitSplit)}`);
+                    jannaItems.push(`Profit (50%): ${fmt(profitSplit)}`);
+                }
+            }
+            
+            // Display final totals
+            document.getElementById('kelvinTotal').textContent = 'KES ' + fmt(kelvinTotal);
+            document.getElementById('jannaTotal').textContent = 'KES ' + fmt(jannaTotal);
+            document.getElementById('kelvinBreakdown').innerHTML = kelvinItems.join('<br>');
+            document.getElementById('jannaBreakdown').innerHTML = jannaItems.join('<br>');
+            
+            // Variance check
+            const totalDistributed = kelvinTotal + jannaTotal + externalMat + totalUnexpectedPaid;
+            const variance = Math.abs(invoiceTotal - totalDistributed);
+            
+            const varianceEl = document.getElementById('varianceDisplay');
+            
+            let messages = [];
+            
+            if (overrunUnpaid > 0) {
+                messages.push(`<strong>⚠️ Overrun Labour Unpaid:</strong> KES ${fmt(overrunUnpaid)} could not be paid (buffer and profit pool exhausted)`);
+            }
+            
+            if (unexpectedUnpaid > 0) {
+                messages.push(`<strong>⚠️ Unexpected Costs Unpaid:</strong> KES ${fmt(unexpectedUnpaid)} could not be paid (buffer and profit pool exhausted)`);
+            }
+            
+            if (actualAcqComm < acquisitionComm) {
+                const acqShortfall = acquisitionComm - actualAcqComm;
+                messages.push(`<strong>⚠️ Acquisition Commission Reduced:</strong> Only KES ${fmt(actualAcqComm)} of ${fmt(acquisitionComm)} paid (profit pool insufficient)`);
+            }
+            
+            if (variance < 1) {
+                if (messages.length > 0) {
+                    varianceEl.className = 'warning-box';
+                    varianceEl.innerHTML = messages.join('<br><br>') + '<br><br>✓ All available money has been distributed.';
+                } else {
+                    varianceEl.className = 'info-box';
+                    varianceEl.innerHTML = '✓ <strong>Perfect!</strong> All costs covered and money properly distributed.';
+                }
+            } else {
+                varianceEl.className = 'warning-box';
+                varianceEl.innerHTML = `<strong>⚠️ Calculation Error:</strong> KES ${fmt(variance)} variance detected. Total distributed (${fmt(totalDistributed)}) vs Invoice (${fmt(invoiceTotal)})`;
+            }
+            
+            document.getElementById('reconciliationResults').classList.remove('hidden');
+            document.getElementById('exportPdfButton').style.display = 'block';
+            document.getElementById('reconciliationResults').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            
+            save();
+        }
+        
+        // Export invoice/quote to PDF
+        function exportInvoicePDF() {
+            if (!state.currentProject) {
+                alert('Please create or select a project first');
+                showProjectModal();
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const docType = document.querySelector('input[name="documentType"]:checked').value;
+            const docTypeTitle = docType === 'quote' ? 'QUOTE' : 'INVOICE';
+            
+            const invoiceNum = document.getElementById('invoiceNumber').value || 'DRAFT';
+            const clientName = state.clientName;
+            const projectTitle = state.projectName;
+            const total = parseFloat(document.getElementById('invoiceTotal').value) || 0;
+            const notes = document.getElementById('notes').value || 'Thank you for your business!\nPayment via M-Pesa: 0705 626 136';
+            
+            const date = new Date().toLocaleDateString('en-KE', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            let y = 20;
+            const lineHeight = 7;
+            const pageWidth = 210;
+            const margin = 20;
+            const contentWidth = pageWidth - (margin * 2);
+            
+            // Modern black header
+            const gradient = doc.GState({ fillOpacity: 0.95 });
+            doc.setGState(gradient);
+            doc.setFillColor(0, 0, 0);
+            doc.rect(0, 0, pageWidth, 45, 'F');
+            
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(26);
+            doc.setFont(undefined, 'bold');
+            doc.text('FIGWORKS', pageWidth / 2, 20, { align: 'center' });
+            
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'normal');
+            doc.text('Project Finance Calculator', pageWidth / 2, 28, { align: 'center' });
+            
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.text(docTypeTitle, pageWidth / 2, 37, { align: 'center' });
+            
+            y = 55;
+            
+            // Document details
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.text(docTypeTitle + ' #:', margin, y);
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(60, 60, 60);
+            doc.text(invoiceNum, margin + 30, y);
+            y += lineHeight;
+            
+            doc.setTextColor(0, 0, 0);
+            doc.setFont(undefined, 'bold');
+            doc.text('Date:', margin, y);
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(60, 60, 60);
+            doc.text(date, margin + 30, y);
+            y += lineHeight + 5;
+            
+            // Separator
+            doc.setDrawColor(0, 0, 0);
+            doc.setLineWidth(0.8);
+            doc.line(margin, y, pageWidth - margin, y);
+            y += 10;
+            
+            // Client information section
+            doc.setFillColor(249, 250, 251);
+            doc.roundedRect(margin, y - 3, contentWidth, 22, 2, 2, 'F');
+            
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.text('Client:', margin + 3, y + 4);
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(60, 60, 60);
+            doc.text(clientName, margin + 20, y + 4);
+            
+            y += lineHeight + 3;
+            
+            doc.setTextColor(0, 0, 0);
+            doc.setFont(undefined, 'bold');
+            doc.text('Project:', margin + 3, y + 4);
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(60, 60, 60);
+            
+            // Handle long project titles
+            const projectLines = doc.splitTextToSize(projectTitle, contentWidth - 25);
+            doc.text(projectLines, margin + 20, y + 4);
+            
+            y += 25;
+            
+            // Amount section - large and prominent
+            doc.setFillColor(245, 245, 245);
+            doc.roundedRect(margin, y, contentWidth, 35, 3, 3, 'F');
+            
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.text('TOTAL AMOUNT', pageWidth / 2, y + 12, { align: 'center' });
+            
+            doc.setFontSize(22);
+            doc.setTextColor(0, 0, 0);
+            doc.text('KES ' + fmt(total), pageWidth / 2, y + 25, { align: 'center' });
+            
+            y += 45;
+            
+            // Notes section
+            if (notes && notes.trim()) {
+                doc.setDrawColor(0, 0, 0);
+                doc.setLineWidth(0.8);
+                doc.line(margin, y, pageWidth - margin, y);
+                y += 10;
+                
+                doc.setFillColor(249, 250, 251);
+                const notesLines = doc.splitTextToSize(notes, contentWidth - 10);
+                const notesHeight = notesLines.length * 6 + 10;
+                doc.roundedRect(margin, y, contentWidth, notesHeight, 2, 2, 'F');
+                
+                doc.setTextColor(60, 60, 60);
+                doc.setFontSize(9);
+                doc.setFont(undefined, 'normal');
+                doc.text(notesLines, margin + 5, y + 7);
+                
+                y += notesHeight + 10;
+            }
+            
+            // Payment information highlight
+            doc.setFillColor(245, 245, 245);
+            doc.roundedRect(margin, y, contentWidth, 12, 2, 2, 'F');
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.text('Payment via M-Pesa: 0705 626 136', pageWidth / 2, y + 8, { align: 'center' });
+            
+            // Footer
+            doc.setTextColor(156, 163, 175);
+            doc.setFontSize(8);
+            doc.setFont(undefined, 'normal');
+            doc.text('Generated by FigWorks Calculator', pageWidth / 2, 285, { align: 'center' });
+            
+            // Save
+            const filename = `FigWorks_${docTypeTitle}_${invoiceNum}_${clientName.replace(/[^a-z0-9]/gi, '_')}.pdf`;
+            doc.save(filename);
+        }
+        
+        // Export reconciliation calculations to PDF
+        function exportReconciliationPDF() {
+            if (!state.currentProject) {
+                alert('Please create or select a project first');
+                showProjectModal();
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const projectTitle = state.projectName;
+            const clientName = state.clientName;
+            const currentDate = new Date().toLocaleDateString('en-KE', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            let y = 20;
+            const lineHeight = 7;
+            const pageWidth = 210;
+            const margin = 20;
+            const contentWidth = pageWidth - (margin * 2);
+            
+            // Modern black header
+            const gradient = doc.GState({ fillOpacity: 0.95 });
+            doc.setGState(gradient);
+            doc.setFillColor(0, 0, 0);
+            doc.rect(0, 0, pageWidth, 45, 'F');
+            
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(26);
+            doc.setFont(undefined, 'bold');
+            doc.text('FIGWORKS', pageWidth / 2, 20, { align: 'center' });
+            
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'normal');
+            doc.text('Project Finance Calculator', pageWidth / 2, 28, { align: 'center' });
+            
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.text('Reconciliation Report', pageWidth / 2, 37, { align: 'center' });
+            
+            y = 55;
+            
+            // Project details with modern styling
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.text('Project:', margin, y);
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(60, 60, 60);
+            doc.text(projectTitle, margin + 25, y);
+            y += lineHeight;
+            
+            doc.setTextColor(0, 0, 0);
+            doc.setFont(undefined, 'bold');
+            doc.text('Client:', margin, y);
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(60, 60, 60);
+            doc.text(clientName, margin + 25, y);
+            y += lineHeight;
+            
+            doc.setTextColor(0, 0, 0);
+            doc.setFont(undefined, 'bold');
+            doc.text('Date:', margin, y);
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(60, 60, 60);
+            doc.text(currentDate, margin + 25, y);
+            y += lineHeight + 8;
+            
+            // Sleek separator line
+            doc.setDrawColor(0, 0, 0);
+            doc.setLineWidth(0.8);
+            doc.line(margin, y, pageWidth - margin, y);
+            y += 12;
+            
+            // Invoice Amount with modern box
+            doc.setFillColor(240, 244, 255);
+            doc.roundedRect(margin, y - 3, contentWidth, 10, 2, 2, 'F');
+            doc.setFontSize(11);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(0, 0, 0);
+            doc.text('INVOICE AMOUNT', margin + 3, y + 4);
+            doc.text(document.getElementById('invoiceAmount').textContent, pageWidth - margin - 3, y + 4, { align: 'right' });
+            y += 15;
+            
+            // Hard Deductions section with modern header
+            doc.setFillColor(249, 250, 251);
+            doc.roundedRect(margin, y, contentWidth, 9, 2, 2, 'F');
+            doc.setTextColor(55, 65, 81);
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.text('HARD DEDUCTIONS (Always Paid First)', margin + 3, y + 6);
+            y += 13;
+            
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(9);
+            doc.setFont(undefined, 'normal');
+            
+            const hardDeductions = [
+                ['External Materials', document.getElementById('finalExternalMat').textContent],
+                ['Workshop Materials (to Janna)', document.getElementById('finalWorkshopMat').textContent],
+                ['Workshop Commission (to Janna)', document.getElementById('finalWorkshopComm').textContent],
+                ['Quoted Labour (to Kelvin)', document.getElementById('finalLabour').textContent]
+            ];
+            
+            hardDeductions.forEach(([label, value]) => {
+                doc.setTextColor(75, 85, 99);
+                doc.text(label, margin + 5, y);
+                doc.setTextColor(0, 0, 0);
+                doc.setFont(undefined, 'bold');
+                doc.text(value, pageWidth - margin - 3, y, { align: 'right' });
+                doc.setFont(undefined, 'normal');
+                y += lineHeight;
+            });
+            
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(0, 0, 0);
+            doc.text('Remaining After Hard Costs', margin + 5, y);
+            doc.text(document.getElementById('afterHardCosts').textContent, pageWidth - margin - 3, y, { align: 'right' });
+            y += lineHeight + 7;
+            
+            // Buffer Allocation section
+            if (y > 240) {
+                doc.addPage();
+                y = 20;
+            }
+            
+            doc.setFillColor(249, 250, 251);
+            doc.roundedRect(margin, y, contentWidth, 9, 2, 2, 'F');
+            doc.setTextColor(55, 65, 81);
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.text('BUFFER ALLOCATION (Priority Order)', margin + 3, y + 6);
+            y += 13;
+            
+            doc.setTextColor(75, 85, 99);
+            doc.setFontSize(9);
+            doc.setFont(undefined, 'normal');
+            
+            doc.text('Available Buffer', margin + 5, y);
+            doc.setTextColor(0, 0, 0);
+            doc.setFont(undefined, 'bold');
+            doc.text(document.getElementById('leewayAvailableDisplay').textContent, pageWidth - margin - 3, y, { align: 'right' });
+            doc.setFont(undefined, 'normal');
+            y += lineHeight + 3;
+            
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(0, 0, 0);
+            doc.text('1. Unexpected Costs (Highest Priority)', margin + 5, y);
+            y += lineHeight;
+            doc.setFont(undefined, 'normal');
+            
+            const bufferItems = [
+                ['Total Unexpected', document.getElementById('unexpectedTotal').textContent],
+                ['  - Paid from Buffer', document.getElementById('unexpectedPaidLeeway').textContent],
+                ['  - Paid from Profit Pool', document.getElementById('unexpectedPaidProfit').textContent]
+            ];
+            
+            bufferItems.forEach(([label, value]) => {
+                doc.setTextColor(75, 85, 99);
+                doc.text(label, margin + 10, y);
+                doc.setTextColor(0, 0, 0);
+                doc.setFont(undefined, 'bold');
+                doc.text(value, pageWidth - margin - 3, y, { align: 'right' });
+                doc.setFont(undefined, 'normal');
+                y += lineHeight;
+            });
+            
+            y += 2;
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(0, 0, 0);
+            doc.text('2. Overrun Labour (to Kelvin, 50% rate)', margin + 5, y);
+            y += lineHeight;
+            doc.setFont(undefined, 'normal');
+            
+            const overrunItems = [
+                ['Total Overrun', document.getElementById('overrunTotal').textContent],
+                ['  - Paid from Buffer', document.getElementById('overrunPaidLeeway').textContent],
+                ['  - Paid from Profit Pool', document.getElementById('overrunPaidProfit').textContent],
+                ['  - UNPAID', document.getElementById('overrunUnpaid').textContent]
+            ];
+            
+            overrunItems.forEach(([label, value]) => {
+                if (label.includes('UNPAID') && !value.includes('0')) {
+                    doc.setTextColor(220, 38, 38);
+                    doc.setFont(undefined, 'bold');
+                } else {
+                    doc.setTextColor(75, 85, 99);
+                }
+                doc.text(label, margin + 10, y);
+                doc.setTextColor(0, 0, 0);
+                doc.setFont(undefined, 'bold');
+                doc.text(value, pageWidth - margin - 3, y, { align: 'right' });
+                doc.setFont(undefined, 'normal');
+                y += lineHeight;
+            });
+            
+            y += 2;
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(0, 0, 0);
+            doc.text('Total Buffer Used', margin + 5, y);
+            doc.text(document.getElementById('leewayUsed').textContent, pageWidth - margin - 3, y, { align: 'right' });
+            y += lineHeight;
+            
+            doc.text('Buffer to Profit Pool', margin + 5, y);
+            doc.text(document.getElementById('leewayToProfit').textContent, pageWidth - margin - 3, y, { align: 'right' });
+            y += lineHeight + 7;
+            
+            // Profit Pool section
+            if (y > 220) {
+                doc.addPage();
+                y = 20;
+            }
+            
+            doc.setFillColor(249, 250, 251);
+            doc.roundedRect(margin, y, contentWidth, 9, 2, 2, 'F');
+            doc.setTextColor(55, 65, 81);
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.text('PROFIT POOL DISTRIBUTION', margin + 3, y + 6);
+            y += 13;
+            
+            doc.setTextColor(75, 85, 99);
+            doc.setFontSize(9);
+            doc.setFont(undefined, 'normal');
+            
+            const profitItems = [
+                ['Remaining + Unused Buffer', document.getElementById('profitPoolBeforeAcq').textContent],
+                ['Acquisition Commission', document.getElementById('finalAcqComm').textContent],
+                ['Final Profit for Distribution', document.getElementById('finalProfitAmount').textContent]
+            ];
+            
+            profitItems.forEach(([label, value]) => {
+                doc.text(label, margin + 5, y);
+                doc.setTextColor(0, 0, 0);
+                doc.setFont(undefined, 'bold');
+                doc.text(value, pageWidth - margin - 3, y, { align: 'right' });
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(75, 85, 99);
+                y += lineHeight;
+            });
+            
+            y += 12;
+            
+            // Final Totals section
+            if (y > 200) {
+                doc.addPage();
+                y = 20;
+            }
+            
+            // Modern black header for final totals
+            doc.setFillColor(0, 0, 0);
+            doc.roundedRect(margin, y, contentWidth, 12, 2, 2, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.text('FINAL TOTALS', pageWidth / 2, y + 8, { align: 'center' });
+            y += 18;
+            
+            // Kelvin's box with black styling
+            doc.setFillColor(0, 0, 0);
+            doc.roundedRect(margin, y, (contentWidth / 2) - 5, 32, 3, 3, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(10);
+            doc.text('KELVIN', margin + ((contentWidth / 2) - 5) / 2, y + 7, { align: 'center' });
+            doc.setFontSize(14);
+            doc.setFont(undefined, 'bold');
+            doc.text(document.getElementById('kelvinTotal').textContent, margin + ((contentWidth / 2) - 5) / 2, y + 15, { align: 'center' });
+            
+            // Kelvin breakdown
+            const kelvinBreakdown = document.getElementById('kelvinBreakdown').innerHTML.split('<br>');
+            doc.setFontSize(7);
+            doc.setFont(undefined, 'normal');
+            let breakdownY = y + 21;
+            kelvinBreakdown.forEach(item => {
+                if (item.trim()) {
+                    doc.text(item.trim(), margin + ((contentWidth / 2) - 5) / 2, breakdownY, { align: 'center' });
+                    breakdownY += 4;
+                }
+            });
+            
+            // Janna's box with dark gray styling
+            doc.setFillColor(55, 65, 81);
+            doc.roundedRect(margin + (contentWidth / 2) + 5, y, (contentWidth / 2) - 5, 32, 3, 3, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.text('JANNA / WORKSHOP', margin + (contentWidth / 2) + 5 + ((contentWidth / 2) - 5) / 2, y + 7, { align: 'center' });
+            doc.setFontSize(14);
+            doc.text(document.getElementById('jannaTotal').textContent, margin + (contentWidth / 2) + 5 + ((contentWidth / 2) - 5) / 2, y + 15, { align: 'center' });
+            
+            // Janna breakdown
+            const jannaBreakdown = document.getElementById('jannaBreakdown').innerHTML.split('<br>');
+            doc.setFontSize(7);
+            doc.setFont(undefined, 'normal');
+            breakdownY = y + 21;
+            jannaBreakdown.forEach(item => {
+                if (item.trim()) {
+                    doc.text(item.trim(), margin + (contentWidth / 2) + 5 + ((contentWidth / 2) - 5) / 2, breakdownY, { align: 'center' });
+                    breakdownY += 4;
+                }
+            });
+            
+            y += 42;
+            
+            // Modern footer
+            doc.setTextColor(156, 163, 175);
+            doc.setFontSize(8);
+            doc.setFont(undefined, 'normal');
+            doc.text('Generated by FigWorks Calculator', pageWidth / 2, 285, { align: 'center' });
+            
+            // Save with modern filename
+            const filename = `FigWorks_Reconciliation_${projectTitle.replace(/[^a-z0-9]/gi, '_')}_${currentDate.replace(/[^a-z0-9]/gi, '_')}.pdf`;
+            doc.save(filename);
+        }
+        
+        // Toggle money flow details
+        function toggleMoneyFlow() {
+            const section = document.getElementById('moneyFlowSection');
+            const toggle = document.getElementById('moneyFlowToggle');
+            
+            if (section.style.display === 'none') {
+                section.style.display = 'block';
+                toggle.textContent = '▼';
+            } else {
+                section.style.display = 'none';
+                toggle.textContent = '▶';
+            }
+        }
+        
+        // Update document type labels
+        document.querySelectorAll('input[name="documentType"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const label = this.value === 'quote' ? 'Quote' : 'Invoice';
+                document.getElementById('docNumLabel').textContent = label;
+            });
+        });
+        
+        // Auto-save on input
+        document.querySelectorAll('input, select, textarea').forEach(el => {
+            el.addEventListener('input', save);
+        });
+        
+        // Load saved data on page load
+        window.addEventListener('load', () => {
+            load();
+            updateCurrentProjectDisplay();
+        });
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', (event) => {
+            const modal = document.getElementById('projectModal');
+            if (event.target === modal) {
+                closeProjectModal();
+            }
+        });
+        
+        // Close modal with Escape key
+        window.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeProjectModal();
+            }
+        });
+    </script>
+</body>
+</html>
