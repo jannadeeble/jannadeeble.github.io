@@ -1,0 +1,23 @@
+{
+  "generated": "2025-10-16T08:13:18.490Z",
+  "apps": [
+    {
+      "name": "FigWorks - Project Finance Calculator",
+      "file": "figworks-calculator.html",
+      "description": "A mini app",
+      "icon": "📱"
+    },
+    {
+      "name": "Test App",
+      "file": "test-app.html",
+      "description": "A mini app",
+      "icon": "⚡️"
+    },
+    {
+      "name": "Auto-Start Test",
+      "file": "test-autostart.html",
+      "description": "A mini app",
+      "icon": "🎯"
+    }
+  ]
+}
