@@ -9,11 +9,12 @@ const DEBOUNCE_MS = 2000; // Wait 2 seconds after last change before syncing
 
 let syncTimer = null;
 let isProcessing = false;
+let htmlChanged = false;
 
 console.log('🔄 Auto-sync started for:', REPO_PATH);
 console.log('📁 Watching for file changes...\n');
 
-function runGitCommand(command) {
+function runCommand(command) {
   return new Promise((resolve, reject) => {
     exec(command, { cwd: REPO_PATH }, (error, stdout, stderr) => {
       if (error && !stderr.includes('nothing to commit')) {
@@ -25,15 +26,30 @@ function runGitCommand(command) {
   });
 }
 
-async function syncToGitHub() {
+async function regenerateManifest() {
+  console.log('🔄 Regenerating app manifest...');
+  try {
+    await runCommand('node generate-manifest.js');
+    console.log('✓ Manifest updated\n');
+  } catch (error) {
+    console.error('✗ Manifest generation failed:', error.message);
+  }
+}
+
+async function syncToGitHub(htmlChanged = false) {
   if (isProcessing) return;
 
   isProcessing = true;
   console.log('🔄 Syncing changes to GitHub...');
 
   try {
+    // Regenerate manifest if HTML files changed
+    if (htmlChanged) {
+      await regenerateManifest();
+    }
+
     // Check for changes
-    const status = await runGitCommand('git status --porcelain');
+    const status = await runCommand('git status --porcelain');
 
     if (!status.trim()) {
       console.log('✓ No changes to sync\n');
@@ -42,14 +58,14 @@ async function syncToGitHub() {
     }
 
     // Add all changes
-    await runGitCommand('git add .');
+    await runCommand('git add .');
 
     // Commit with timestamp
     const timestamp = new Date().toLocaleString();
-    await runGitCommand(`git commit -m "Auto-sync: ${timestamp}"`);
+    await runCommand(`git commit -m "Auto-sync: ${timestamp}"`);
 
     // Push to GitHub
-    await runGitCommand('git push');
+    await runCommand('git push');
 
     console.log('✓ Synced to GitHub successfully!');
     console.log(`  View at: https://jannadeeble.github.io\n`);
@@ -64,21 +80,30 @@ function scheduleSync() {
   if (syncTimer) clearTimeout(syncTimer);
 
   syncTimer = setTimeout(() => {
-    syncToGitHub();
+    syncToGitHub(htmlChanged);
+    htmlChanged = false;
   }, DEBOUNCE_MS);
 }
 
 // Watch for file changes
 fs.watch(REPO_PATH, { recursive: true }, (eventType, filename) => {
-  // Ignore git files and the auto-sync script itself
+  // Ignore git files and system files
   if (!filename ||
       filename.includes('.git/') ||
       filename === 'auto-sync.js' ||
+      filename === 'generate-manifest.js' ||
+      filename === 'apps-manifest.json' ||
       filename.startsWith('.')) {
     return;
   }
 
   console.log(`📝 Detected change: ${filename}`);
+
+  // Track if HTML files changed
+  if (filename.endsWith('.html')) {
+    htmlChanged = true;
+  }
+
   scheduleSync();
 });
 
