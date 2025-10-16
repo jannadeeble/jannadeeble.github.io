@@ -66,3 +66,18 @@ Press Ctrl+C to stop auto-sync
 📝 Detected change: auto-sync.js.tmp.52173.1760602425461
 📝 Detected change: auto-sync.js.tmp.52173.1760602425580
 🔄 Syncing changes to GitHub...
+✓ Synced to GitHub successfully!
+  View at: https://jannadeeble.github.io
+
+🔄 Auto-sync started for: /Users/jannadeeble/mini-apps
+📁 Watching for file changes...
+
+Press Ctrl+C to stop auto-sync
+
+📝 Detected change: _headers.tmp.52173.1760602591098
+📝 Detected change: _headers
+📝 Detected change: wrangler.toml.tmp.52173.1760602591153
+📝 Detected change: wrangler.toml
+📝 Detected change: DEPLOYMENT.md.tmp.52173.1760602591233
+📝 Detected change: DEPLOYMENT.md
+🔄 Syncing changes to GitHub...
